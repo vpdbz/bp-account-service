@@ -1,15 +1,17 @@
 package com.codingame.backendbp.bpaccountservice.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.codingame.backendbp.bpaccountservice.dto.MovementPatchRequest;
 import com.codingame.backendbp.bpaccountservice.dto.MovementRequest;
 
 public class Movement {
     private long id;
     private long accountId;
-    private long initialBalance;
-    private long amount;
-    private LocalDateTime date;
+    private Long initialBalance;
+    private Long amount;
+    private LocalDate date;
     private Account account;
 
     public Movement() {
@@ -21,6 +23,12 @@ public class Movement {
         this.account = new Account();
         this.account.setType(movementRequest.type());
         this.account.setNumber(movementRequest.number());
+    }
+
+    public Movement(MovementPatchRequest movementPatchRequest) {
+        this.amount = movementPatchRequest.amount();
+        this.date = movementPatchRequest.date();
+        this.account = new Account();
     }
 
     public long getId() {
@@ -39,27 +47,27 @@ public class Movement {
         this.accountId = accountId;
     }
 
-    public long getInitialBalance() {
+    public Long getInitialBalance() {
         return initialBalance;
     }
 
-    public void setInitialBalance(long initialBalance) {
+    public void setInitialBalance(Long initialBalance) {
         this.initialBalance = initialBalance;
     }
 
-    public long getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
-    public void setAmount(long amount) {
+    public void setAmount(Long amount) {
         this.amount = amount;
     }
 
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

@@ -13,59 +13,59 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.codingame.backendbp.bpaccountservice.business.AccountService;
-import com.codingame.backendbp.bpaccountservice.dto.AccountPatchRequest;
-import com.codingame.backendbp.bpaccountservice.dto.AccountRequest;
+import com.codingame.backendbp.bpaccountservice.business.MovementService;
+import com.codingame.backendbp.bpaccountservice.dto.MovementPatchRequest;
+import com.codingame.backendbp.bpaccountservice.dto.MovementRequest;
 import com.codingame.backendbp.bpaccountservice.exception.BadRequestException;
-import com.codingame.backendbp.bpaccountservice.model.Account;
+import com.codingame.backendbp.bpaccountservice.model.Movement;
 import com.codingame.backendbp.bpaccountservice.service.controller.model.BaseResponse;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/cuentas")
-public class AccountController {
+@RequestMapping("/api/v1/movimientos")
+public class MovementController {
 
-    private AccountService accountService;
+    private MovementService movementService;
 
-    public AccountController(AccountService accountService) {
-        this.accountService = accountService;
+    public MovementController(MovementService movementService) {
+        this.movementService = movementService;
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse> getAllAccounts() {
-        return createOkResponse(accountService.getAllAccounts(), null, HttpStatus.OK);
+    public ResponseEntity<BaseResponse> getAllMovements() {
+        return createOkResponse(movementService.getAllMovements(), null, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse> getAccountById(@PathVariable Long id) {
-        return createOkResponse(accountService.getAccountById(id), null, HttpStatus.OK);
+    public ResponseEntity<BaseResponse> getMovementById(@PathVariable Long id) {
+        return createOkResponse(movementService.getMovementById(id), null, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> saveAccount(@RequestBody @Valid AccountRequest accountRequest, BindingResult bindingResult) {
+    public ResponseEntity<BaseResponse> saveMovement(@RequestBody @Valid MovementRequest movementRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult);
         }
-        return createOkResponse(accountService.saveAccount(new Account(accountRequest)), null, HttpStatus.OK);
+        return createOkResponse(movementService.saveMovement(new Movement(movementRequest)), null, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BaseResponse> updateAccount(@PathVariable Long id, @RequestBody @Valid AccountRequest accountRequest, BindingResult bindingResult) {
+    public ResponseEntity<BaseResponse> updateMovement(@PathVariable Long id, @RequestBody @Valid MovementRequest movementRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult);
         }
-        return createOkResponse(accountService.updateAccount(id, new Account(accountRequest)), null, HttpStatus.OK);
+        return createOkResponse(movementService.updateMovement(id, new Movement(movementRequest)), null, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<BaseResponse> patchAccount(@PathVariable Long id, @RequestBody AccountPatchRequest accountPatchRequest) {
-        return createOkResponse(accountService.patchAccount(id, new Account(accountPatchRequest)), null, HttpStatus.OK);
+    public ResponseEntity<BaseResponse> patchMovement(@PathVariable Long id, @RequestBody MovementPatchRequest movementPatchRequest) {
+        return createOkResponse(movementService.patchMovement(id, new Movement(movementPatchRequest)), null, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse> deleteAccount(@PathVariable Long id) {
-        accountService.deleteAccount(id);
+    public ResponseEntity<BaseResponse> deleteMovement(@PathVariable Long id) {
+        movementService.deleteMovement(id);
         return createOkResponse(null, null, HttpStatus.OK);
     }
 

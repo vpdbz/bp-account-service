@@ -1,5 +1,7 @@
 package com.codingame.backendbp.bpaccountservice.dao.entity;
 
+import java.util.List;
+
 import com.codingame.backendbp.bpaccountservice.model.Account;
 
 import jakarta.persistence.Column;
@@ -8,6 +10,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -32,8 +36,8 @@ public class AccountEntity {
     private String clientName;
     private boolean status;
 
-    @OneToOne(mappedBy = "accountEntity")
-    private MovementEntity movementEntity;
+    @OneToMany(mappedBy = "accountEntity")
+    private List<MovementEntity> movementEntity;
 
     public AccountEntity() {
     }
@@ -104,11 +108,11 @@ public class AccountEntity {
         this.status = status;
     }
 
-    public MovementEntity getMovementEntity() {
+    public List<MovementEntity> getMovementEntity() {
         return movementEntity;
     }
 
-    public void setMovementEntity(MovementEntity movementEntity) {
+    public void setMovementEntity(List<MovementEntity> movementEntity) {
         this.movementEntity = movementEntity;
     }
     

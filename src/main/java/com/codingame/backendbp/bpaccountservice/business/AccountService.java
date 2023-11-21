@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.codingame.backendbp.bpaccountservice.client.ClientRest;
+import com.codingame.backendbp.bpaccountservice.client.model.ClientResponse;
 import com.codingame.backendbp.bpaccountservice.dao.AccountRepository;
 import com.codingame.backendbp.bpaccountservice.dao.entity.AccountEntity;
 
@@ -17,9 +19,11 @@ import com.codingame.backendbp.bpaccountservice.dao.entity.AccountEntity;
 public class AccountService {
 
     private AccountRepository accountRepository;
+    private ClientRest clientRest;
 
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(AccountRepository accountRepository, ClientRest clientRest) {
         this.accountRepository = accountRepository;
+        this.clientRest = clientRest;
     }
 
     public List<AccountResponse> getAllAccounts() {
@@ -33,28 +37,53 @@ public class AccountService {
         if (accountEntity.isPresent()) {
             return mapToAccountResponse(accountEntity.get());
         } else {
-            return null;
+            throw new NotFoundException("La cuenta no existe con id:" + id);
         }
     }
 
+    public Optional<AccountEntity> getAccountByNumberAndType(long number, String type) {
+        return accountRepository.findByNumberAndType(number, type);
+    }
+
     public AccountResponse saveAccount(Account account) {
-        AccountEntity accountEntity = accountRepository.save(new AccountEntity(account));
-        return mapToAccountResponse(accountEntity);
+        ClientResponse clientResponse = clientRest.getClientByName(account.getClientName());
+        if (clientResponse != null) {
+            account.setClientId(clientResponse.id());
+            AccountEntity accountEntity = accountRepository.save(new AccountEntity(account));
+            return mapToAccountResponse(accountEntity);
+        } else {
+            throw new NotFoundException("El cliente no existe con el nombre: " + account.getClientName());
+        }
     }
 
     public AccountResponse updateAccount(Long id, Account account) {
         if (accountRepository.existsById(id)) {
             account.setId(id);
-            AccountEntity accountEntity = accountRepository.save(new AccountEntity(account));
-            return mapToAccountResponse(accountEntity);
+            ClientResponse clientResponse = clientRest.getClientByName(account.getClientName());
+            if (clientResponse != null) {
+                account.setClientId(clientResponse.id());
+                AccountEntity accountEntity = accountRepository.save(new AccountEntity(account));
+                return mapToAccountResponse(accountEntity);
+            } else {
+                throw new NotFoundException("El cliente no existe con el nombre: " + account.getClientName());
+            }
         } else {
-            throw new NotFoundException("Account not found with id: " + id);
+            throw new NotFoundException("La cuenta no existe con id: " + id);
         }
     }
 
     public AccountResponse patchAccount(Long id, Account account) {
         return accountRepository.findById(id)
                 .map(accountFound -> {
+                    if (account.getClientName() != null) {
+                        ClientResponse clientResponse = clientRest.getClientByName(account.getClientName());
+                        if (clientResponse != null) {
+                            accountFound.setClientId(clientResponse.id());
+                            accountFound.setClientName(clientResponse.name());
+                        } else {
+                            throw new NotFoundException("El cliente no existe con el nombre: " + account.getClientName());
+                        }
+                    }
                     if (account.getNumber() != null) {
                         accountFound.setNumber(account.getNumber());
                     }
@@ -71,7 +100,7 @@ public class AccountService {
                     AccountEntity accountEntity = accountRepository.save(accountFound);
                     return mapToAccountResponse(accountEntity);
                 })
-                .orElseThrow(() -> new NotFoundException("Numero de Cuenta no encontrado con ID: " + id));
+                .orElseThrow(() -> new NotFoundException("La cuenta no existe con id: " + id));
     }
 
     public void deleteAccount(Long id) {

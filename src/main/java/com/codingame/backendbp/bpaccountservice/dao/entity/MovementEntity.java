@@ -6,13 +6,15 @@ import java.sql.Timestamp;
 import com.codingame.backendbp.bpaccountservice.model.Movement;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -27,7 +29,7 @@ public class MovementEntity {
     private long amount;
     private Timestamp date;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "accountId", referencedColumnName = "id")
     private AccountEntity accountEntity;
 
@@ -39,7 +41,7 @@ public class MovementEntity {
         this.initialBalance = movement.getInitialBalance();
         this.amount = movement.getAmount();
         if (movement.getDate() != null) {
-            this.date = Timestamp.valueOf(movement.getDate());
+            this.date = Timestamp.valueOf(movement.getDate().atStartOfDay());
         } else {
             this.date = new Timestamp(System.currentTimeMillis());
         }
@@ -76,6 +78,14 @@ public class MovementEntity {
 
     public void setDate(Timestamp date) {
         this.date = date;
+    }
+
+    public AccountEntity getAccountEntity() {
+        return accountEntity;
+    }
+
+    public void setAccountEntity(AccountEntity accountEntity) {
+        this.accountEntity = accountEntity;
     }
 
 }

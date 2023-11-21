@@ -14,6 +14,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.codingame.backendbp.bpaccountservice.exception.BadRequestException;
+import com.codingame.backendbp.bpaccountservice.exception.NoFundsException;
 import com.codingame.backendbp.bpaccountservice.exception.NotFoundException;
 import com.codingame.backendbp.bpaccountservice.service.controller.model.BaseResponse;
 
@@ -45,7 +46,14 @@ public class AccountErrorHandlerController extends ResponseEntityExceptionHandle
     public ResponseEntity<BaseResponse> notFoundException(NotFoundException e) {
         LOGGER.error("Not Found exception", e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new BaseResponse(HttpStatus.NOT_FOUND.value(), "El numero de cuenta no existe"));
+                .body(new BaseResponse(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+    }
+
+    @ExceptionHandler(NoFundsException.class)
+    public ResponseEntity<BaseResponse> noFundsException(NoFundsException e) {
+        LOGGER.error("No Funds exception", e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new BaseResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
 
     @Override

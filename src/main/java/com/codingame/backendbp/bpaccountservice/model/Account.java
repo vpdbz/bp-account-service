@@ -1,5 +1,6 @@
 package com.codingame.backendbp.bpaccountservice.model;
 
+import com.codingame.backendbp.bpaccountservice.dao.entity.AccountEntity;
 import com.codingame.backendbp.bpaccountservice.dto.AccountPatchRequest;
 import com.codingame.backendbp.bpaccountservice.dto.AccountRequest;
 
@@ -29,6 +30,16 @@ public class Account {
         this.balance = accountPatchRequest.balance();
         this.clientName = accountPatchRequest.client();
         this.status = accountPatchRequest.status();
+    }
+
+    public Account(AccountEntity accountEntity) {
+        this.id = accountEntity.getId();
+        this.number = accountEntity.getNumber();
+        this.type = accountEntity.getType();
+        this.balance = accountEntity.getBalance();
+        this.clientId = accountEntity.getClientId();
+        this.clientName = accountEntity.getClientName();
+        this.status = accountEntity.isStatus();
     }
 
     public long getId() {

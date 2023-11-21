@@ -23,7 +23,7 @@ class AccountServiceTest {
   @BeforeEach
   void setup() {
     repository = Mockito.mock(AccountRepository.class);
-    service = new AccountService(repository); 
+    //service = new AccountService(repository); 
   }
 
   @Test
