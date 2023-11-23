@@ -1,9 +1,11 @@
 package com.codingame.backendbp.bpaccountservice.business;
 
 import com.codingame.backendbp.bpaccountservice.dto.AccountResponse;
+import com.codingame.backendbp.bpaccountservice.exception.AsyncException;
 import com.codingame.backendbp.bpaccountservice.exception.NotFoundException;
 import com.codingame.backendbp.bpaccountservice.model.Account;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,7 +48,7 @@ public class AccountService {
     }
 
     public AccountResponse saveAccount(Account account) {
-        ClientResponse clientResponse = clientRest.getClientByName(account.getClientName());
+        ClientResponse clientResponse = getClient(account.getClientName());
         if (clientResponse != null) {
             account.setClientId(clientResponse.id());
             AccountEntity accountEntity = accountRepository.save(new AccountEntity(account));
@@ -59,7 +61,7 @@ public class AccountService {
     public AccountResponse updateAccount(Long id, Account account) {
         if (accountRepository.existsById(id)) {
             account.setId(id);
-            ClientResponse clientResponse = clientRest.getClientByName(account.getClientName());
+            ClientResponse clientResponse = getClient(account.getClientName());
             if (clientResponse != null) {
                 account.setClientId(clientResponse.id());
                 AccountEntity accountEntity = accountRepository.save(new AccountEntity(account));
@@ -76,12 +78,13 @@ public class AccountService {
         return accountRepository.findById(id)
                 .map(accountFound -> {
                     if (account.getClientName() != null) {
-                        ClientResponse clientResponse = clientRest.getClientByName(account.getClientName());
+                        ClientResponse clientResponse = getClient(account.getClientName());
                         if (clientResponse != null) {
                             accountFound.setClientId(clientResponse.id());
                             accountFound.setClientName(clientResponse.name());
                         } else {
-                            throw new NotFoundException("El cliente no existe con el nombre: " + account.getClientName());
+                            throw new NotFoundException(
+                                    "El cliente no existe con el nombre: " + account.getClientName());
                         }
                     }
                     if (account.getNumber() != null) {
@@ -116,6 +119,16 @@ public class AccountService {
                 accountEntity.getClientId(),
                 accountEntity.getClientName(),
                 accountEntity.isStatus());
+    }
+
+    private ClientResponse getClient(String name) {
+        CompletableFuture<ClientResponse> clientResponse = clientRest.getClientByName(name);
+        CompletableFuture.allOf(clientResponse).join();
+        try {
+            return clientResponse.get();
+        } catch (Exception e) {
+            throw new AsyncException("Error al obtener el cliente: " + name);
+        }
     }
 
 }

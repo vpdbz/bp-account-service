@@ -20,6 +20,7 @@ docker run -d \
 -e DATASOURCE_DRIVER_CLASSNAME=org.postgresql.Driver \
 -e DATASOURCE_USERNAME=bpaccount \
 -e DATASOURCE_PASSWORD=admin \
+-e APP_CLIENT_URL=http://bp-client-service:8100/api/v1/clientes \
 bp-account-service:1.0.0
 
 read -p "Press any key to resume ..."

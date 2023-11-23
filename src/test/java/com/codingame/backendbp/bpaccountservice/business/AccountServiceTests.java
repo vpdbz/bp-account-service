@@ -1,62 +1,36 @@
 package com.codingame.backendbp.bpaccountservice.business;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
-
-import com.codingame.backendbp.bpaccountservice.business.AccountService;
-import com.codingame.backendbp.bpaccountservice.dao.AccountRepository;
-import com.codingame.backendbp.bpaccountservice.dao.entity.AccountEntity;
 import com.codingame.backendbp.bpaccountservice.dto.AccountResponse;
 
+@SpringBootTest
+@ActiveProfiles("test")
 class AccountServiceTest {
 
-  AccountRepository repository;
-  AccountService service;
-
-  @BeforeEach
-  void setup() {
-    repository = Mockito.mock(AccountRepository.class);
-    //service = new AccountService(repository); 
-  }
+  @Autowired
+  private AccountService service;
 
   @Test
-  void getAllaccounts() {
-    // Mock findAll response
-    Mockito.when(repository.findAll()).thenReturn(Arrays.asList(new AccountEntity()));
-    
-    // Call service
+  void getAllAccounts() {
     List<AccountResponse> result = service.getAllAccounts();
-    
-    // Assertions
+
     assertNotNull(result);
     assertFalse(result.isEmpty());
   }
 
   @Test
-  void getaccountById() {
-    // Mock findById response for valid id
-    Mockito.when(repository.findById(1L))
-      .thenReturn(Optional.of(new AccountEntity()));
+  void getAccountById() {
+    AccountResponse result = service.getAccountById(1L);
 
-    // Mock findById response for invalid id 
-    Mockito.when(repository.findById(2L))
-      .thenReturn(Optional.empty());
-
-    // Call service
-    AccountResponse result1 = service.getAccountById(1L);
-    AccountResponse result2 = service.getAccountById(2L);
-
-    // Assertions 
-    assertNotNull(result1);
-    assertNull(result2);
+    assertNotNull(result);
+    assertEquals(result.clientName(), "Juan Perez");
   }
 
-  // Tests for save, update, delete account
 }

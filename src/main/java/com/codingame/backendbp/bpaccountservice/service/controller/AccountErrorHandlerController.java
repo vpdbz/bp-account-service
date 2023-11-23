@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.codingame.backendbp.bpaccountservice.exception.AsyncException;
 import com.codingame.backendbp.bpaccountservice.exception.BadRequestException;
 import com.codingame.backendbp.bpaccountservice.exception.NoFundsException;
 import com.codingame.backendbp.bpaccountservice.exception.NotFoundException;
@@ -54,6 +55,13 @@ public class AccountErrorHandlerController extends ResponseEntityExceptionHandle
         LOGGER.error("No Funds exception", e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new BaseResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
+    
+    @ExceptionHandler(AsyncException.class)
+    public ResponseEntity<BaseResponse> asyncException(AsyncException e) {
+        LOGGER.error("Async exception", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.codingame.backendbp.bpaccountservice.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import com.codingame.backendbp.bpaccountservice.dto.MovementPatchRequest;
 import com.codingame.backendbp.bpaccountservice.dto.MovementRequest;

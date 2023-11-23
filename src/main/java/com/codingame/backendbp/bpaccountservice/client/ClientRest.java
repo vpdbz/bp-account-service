@@ -1,9 +1,12 @@
 package com.codingame.backendbp.bpaccountservice.client;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,7 +19,8 @@ public class ClientRest {
     @Value("${app.client.url}")
     private String clientURL;
 
-    public ClientResponse getClientByName(String name) {
+    @Async
+    public CompletableFuture<ClientResponse> getClientByName(String name) {
         ClientResponse clientResponse = null;
         RestTemplate restTemplate = new RestTemplate();
         String url = String.format("%s/nombre/%s", clientURL, name);
@@ -27,6 +31,6 @@ public class ClientRest {
             clientResponse = response.getBody().data();
         }
 
-        return clientResponse;
+        return CompletableFuture.completedFuture(clientResponse);
     }
 }
